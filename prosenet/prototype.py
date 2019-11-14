@@ -6,6 +6,7 @@ from tensorflow.keras.layers import Layer as KerasLayer
 
 class Prototype(KerasLayer):
     """
+    Should we combine this with a (positive restricted) Linear classifier, or handle that in a full model?
     """
     def __init__(self, k, **kwargs):
         """
@@ -22,7 +23,7 @@ class Prototype(KerasLayer):
         # what initializer should we use?
         self.prototypes = self.add_weight(
             name='prototypes',
-            shape=(1, self.k, input_shape[-1]),
+            shape=(self.k, input_shape[-1]),
             initializer='random_normal',
             trainable=True
         )
