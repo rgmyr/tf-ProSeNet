@@ -14,7 +14,7 @@ class Prototypes(KerasLayer):
     Do we add losses in `call`?
         - Yes, I think so. But only if training? Or always computed?
     """
-    def __init__(self, k, dmin=1.0, **kwargs):
+    def __init__(self, k, dmin=1.0, Ld=0.01, Lc=0.01, Le=0.1, **kwargs):
         """
         Parameters
         ----------
@@ -23,10 +23,19 @@ class Prototypes(KerasLayer):
         dmin : float, optional
             Threshold to determine whether to prototypes are close, default=1.0.
             For "diversity" regularization. See paper section 3.2 for details.
+        Ld : float, optional
+            Weight for "diversity" regularization loss, default=0.01.
+        Lc : float, optional
+            Weight for "clustering" regularization loss, default=0.01.
+        Le : float, optional
+            Weight for "evidence" regularization loss, default=0.1.
+        **kwargs
+            Additional arguments for base `Layer` constructor (name, etc.)
         """
         super(Prototype, self).__init__(**kwargs)
         self.k = k
         self.dmin = dmin
+        self.Ld, self.Lc, self.Le = Ld, Lc, Le
 
 
     def build(self, input_shape):
@@ -42,7 +51,11 @@ class Prototypes(KerasLayer):
 
 
     def call(self, x, training=None):
-        # Should losses only be added `if training`?
+        """Forward call."""
+
+        # Losses only computed `if training`
+        if training:
+            self.add_loss(self.Ld * self._diversity_term())
 
         # L2 distances from prototypes
         x = tf.expand_dims(x, -2)
@@ -51,17 +64,31 @@ class Prototypes(KerasLayer):
         return tf.exp(-d2)
 
 
-    def _diversity_loss(self):
-        # Compute the "diversity" loss,
-        # which penalizes prototypes that are close to each other
-        pass
+    def _diversity_term(self):
+        """Compute the "diversity" loss,
+        which penalizes prototypes that are close to each other
 
-    def _clustering_loss(self, d2):
+        NOTE: Computes full distance matrix, which is redudant, but prototypes is
+              usually a small-ish tensor, so I'm not going to worry about it.
+        """
+        p = tf.squeeze(self.prototypes)
+
+        r = tf.expand_dims(tf.reduce_sum(p*p, 1), -1)
+
+        D = r - 2 * tf.matmul(p, p, transpose_b=True) + tf.transpose(r)
+
+        Rd = tf.nn.relu(tf.sqrt(D) - self.dmin)
+
+        return tf.reduce_sum(Rd) / 2.
+
+
+    def _clustering_term(self, d2):
         # Compute the "clustering" loss,
         # which minimizes distance between encodings and nearest prototypes
         pass
 
-    def _evidence_loss(self, d2):
+
+    def _evidence_term(self, d2):
         # Compute the "evidence" loss,
         # which pushes each prototype to be close to an encoding
         pass

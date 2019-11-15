@@ -6,6 +6,7 @@ from tf.keras import layers, regularizers
 
 from prosenet import Prototypes
 
+
 #########################
 ### Default arguments ###
 #########################
@@ -54,7 +55,7 @@ class ProSeNet(tf.keras.Model):
             Strength of L1 regularization for `Dense` classifier kernel.
         """
 
-        # Construct encoder
+        # Construct encoder network
         rnn_args = default_rnn_args.update(rnn_args)
         self.encoder = rnn(input_shape, **rnn_args)
 
@@ -67,24 +68,22 @@ class ProSeNet(tf.keras.Model):
             nclasses,
             activation='softmax',
             use_bias=False,
-            kernel_regularizer=regularizers.l1(L1),
+            kernel_regularizer=regularizers.l1(l=L1),
             kernel_constraint=lambda w: tf.nn.relu(w),
             name='classifier'
         )
 
 
     def call(self, x):
-
+        """Full forward call."""
         a = self.similarity_vector(x)
 
         return self.classifier(a)
 
 
     def similarity_vector(self, x):
+        """Return the similarity vector(s) of shape (batches, k,)."""
 
         r_x = self.encoder(x)
 
         return self.prototypes_layer(r_x)
-
-
-    
