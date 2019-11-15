@@ -45,17 +45,19 @@ class Prototypes(KerasLayer):
         self.prototypes = self.add_weight(
             name='prototypes',
             shape=(1, self.k, input_shape[-1]),
-            initializer=normal_init,        # is this the right init?
+            initializer=normal_init,    # is this the right init?
             trainable=True
         )
 
 
     def call(self, x, training=None):
-        """Forward call."""
+        """Forward pass."""
 
         # Losses only computed `if training`
         if training:
-            self.add_loss(self.Ld * self._diversity_term())
+            if self.Ld > 0.:
+                self.add_loss(self.Ld * self._diversity_term())
+
 
         # L2 distances from prototypes
         x = tf.expand_dims(x, -2)
@@ -82,10 +84,15 @@ class Prototypes(KerasLayer):
         return tf.reduce_sum(Rd) / 2.
 
 
-    def _clustering_term(self, d2):
-        # Compute the "clustering" loss,
-        # which minimizes distance between encodings and nearest prototypes
-        pass
+    def _clustering_evidence_terms(self, x):
+        """ Compute the "clustering" loss,
+        which minimizes distance between encodings and nearest prototypes
+            And the "evidence" loss,
+        which pushes each prototype to be close to an encoding
+        """
+        p = tf.squeeze(self.prototypes)
+
+        r = tf.expand_dims
 
 
     def _evidence_term(self, d2):
