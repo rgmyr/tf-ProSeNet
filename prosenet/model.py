@@ -2,9 +2,9 @@
 A `ProSeNet` Model and related operations.
 """
 import tensorflow as tf
-from tf.keras import layers, regularizers
+from tensorflow.keras import layers, regularizers
 
-from prosenet import Prototypes
+from prosenet import encoder, Prototypes
 
 
 #########################
@@ -57,7 +57,7 @@ class ProSeNet(tf.keras.Model):
 
         # Construct encoder network
         rnn_args = default_rnn_args.update(rnn_args)
-        self.encoder = rnn(input_shape, **rnn_args)
+        self.encoder = encoder.rnn(input_shape, **rnn_args)
 
         # Construct `Prototypes` layer
         prototypes_args = default_prototypes_args.update(prototypes_args)

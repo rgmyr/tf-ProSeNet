@@ -4,6 +4,8 @@ A `Prototypes` Layer and related operations.
 import tensorflow as tf
 from tensorflow.keras.layers import Layer as KerasLayer
 
+from prosenet.ops import distance_matrix
+
 
 class Prototypes(KerasLayer):
     """
@@ -32,7 +34,7 @@ class Prototypes(KerasLayer):
         **kwargs
             Additional arguments for base `Layer` constructor (name, etc.)
         """
-        super(Prototype, self).__init__(**kwargs)
+        super(Prototypes, self).__init__(**kwargs)
         self.k = k
         self.dmin = dmin
         self.Ld, self.Lc, self.Le = Ld, Lc, Le
@@ -41,7 +43,7 @@ class Prototypes(KerasLayer):
     def build(self, input_shape):
         # Create prototypes as variable
 
-        normal_init = tf.random_normal_initalizer()
+        normal_init = tf.random_normal_initializer()
         self.prototypes = self.add_weight(
             name='prototypes',
             shape=(1, self.k, input_shape[-1]),
@@ -53,16 +55,23 @@ class Prototypes(KerasLayer):
     def call(self, x, training=None):
         """Forward pass."""
 
+        # L2 distances from prototypes
+        # NOTE: could probably refactor this into above
+        x = tf.expand_dims(x, -2)
+        d2 = tf.norm(x - self.prototypes, ord=2, axis=-1)
+
         # Losses only computed `if training`
         if training:
             if self.Ld > 0.:
                 self.add_loss(self.Ld * self._diversity_term())
+            if self.Lc > 0.:
+                Rc = tf.reduce_sum(tf.reduce_min(d2, 0))
+                self.add_loss(self.Lc * Rc)
+            if self.Le > 0.:
+                Re = tf.reduce_sum(tf.reduce_min(d2, 1))
+                self.add_loss(self.Le * Re)
 
-
-        # L2 distances from prototypes
-        x = tf.expand_dims(x, -2)
-        d2 = tf.norm(x - self.prototypes, ord=2, axis=-1)
-
+        # Return exponentially squashed similarities
         return tf.exp(-d2)
 
 
@@ -73,32 +82,11 @@ class Prototypes(KerasLayer):
         NOTE: Computes full distance matrix, which is redudant, but prototypes is
               usually a small-ish tensor, so I'm not going to worry about it.
         """
-        p = tf.squeeze(self.prototypes)
+        D = distance_matrix(self.prototypes, self.prototypes)
 
-        r = tf.expand_dims(tf.reduce_sum(p*p, 1), -1)
+        Rd = tf.nn.relu(-D + self.dmin)
 
-        D = r - 2 * tf.matmul(p, p, transpose_b=True) + tf.transpose(r)
-
-        Rd = tf.nn.relu(tf.sqrt(D) - self.dmin)
-
-        return tf.reduce_sum(Rd) / 2.
-
-
-    def _clustering_evidence_terms(self, x):
-        """ Compute the "clustering" loss,
-        which minimizes distance between encodings and nearest prototypes
-            And the "evidence" loss,
-        which pushes each prototype to be close to an encoding
-        """
-        p = tf.squeeze(self.prototypes)
-
-        r = tf.expand_dims
-
-
-    def _evidence_term(self, d2):
-        # Compute the "evidence" loss,
-        # which pushes each prototype to be close to an encoding
-        pass
+        return tf.reduce_sum(tf.square(Rd)) / 2.
 
 
     def get_config(self):
