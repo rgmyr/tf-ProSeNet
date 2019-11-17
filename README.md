@@ -17,3 +17,9 @@ Additional required operations:
 - **Prototype projection**: Every few (~4) epochs, prototype vectors are re-assigned to the closest embedding sequence in the training set.
 - **Prototype interpretation**: Need to method to grab classification weights assigned to prototype and interpret their associated label(s).
 - **Prototype simplification**: Rather than projecting prototypes to complete sequences, use beam search to find a subsequence containing critical events. **NOTE**: the paper is somewhat ambiguous as to whether this is used during training (as the "projection" step) or whether this is just an interpretation tool. I think it's the latter, but may raise an issue on their template repo to be sure.
+
+## Dataset
+
+I plan to verify this implementation by reproducing results on the [MIT-BIH Arrhythmia ECG Dataset](https://physionet.org/content/mitdb/1.0.0/) following the same preprocessing scheme as in the paper (detailed in [reference [16]](https://arxiv.org/abs/1805.00794)).
+
+Check out `wfdb` package -- looks like it has relevant utilities, which is nice, since the MIT DB documentation is somewhat lacking.
