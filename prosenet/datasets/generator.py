@@ -16,6 +16,9 @@ class DataGenerator(Sequence):
         self.augment_fn = augment_fn
         self.format_fn = format_fn
 
+        # shuffle to start
+        self.on_epoch_end()
+
 
     def __len__(self):
         return int(np.ceil(len(self.X) / float(self.batch_size)))

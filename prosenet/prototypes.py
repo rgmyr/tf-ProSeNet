@@ -42,13 +42,13 @@ class Prototypes(KerasLayer):
 
     def build(self, input_shape):
         # Create prototypes as weight variable
-        # Note: had to add constraint to keep gradients from exploding
+        # NOTE: had to add constraint to keep gradients from exploding
 
-        normal_init = tf.random_normal_initializer()
+        normal_init = tf.random_normal_initializer(stddev=0.25)
         self.prototypes = self.add_weight(
             name='prototypes',
             shape=(1, self.k, input_shape[-1]),
-            initializer=normal_init,    # is this the right init?
+            initializer='glorot_uniform',            #normal_init,    # is this the right init?
             constraint=lambda w: tf.clip_by_value(w, -1., 1.),
             trainable=True
         )
@@ -72,7 +72,7 @@ class Prototypes(KerasLayer):
         self.add_loss(dLoss)
         self.add_loss(cLoss)
         self.add_loss(eLoss)
-        
+
         # Return exponentially squashed distances
         return tf.exp(-d2)
 

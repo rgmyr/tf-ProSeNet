@@ -44,10 +44,11 @@ class ArrhythmiaDataset(BaseDataset):
         train_data = np.loadtxt(self.train_path, delimiter=',')
         test_data = np.loadtxt(self.test_path, delimiter=',')
 
-        self.X_train = train_data[:, :-1, np.newaxis]
+        # Going to try shifting to [-1, 1] range
+        self.X_train = train_data[:, :-1, np.newaxis]*2.0 - 1.0
         self.y_train = to_categorical(train_data[:, -1].astype(np.int))
 
-        self.X_test = test_data[:, :-1, np.newaxis]
+        self.X_test = test_data[:, :-1, np.newaxis]*2.0 - 1.0
         self.y_test = to_categorical(test_data[:, -1].astype(np.int))
 
 
