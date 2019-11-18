@@ -54,17 +54,18 @@ class ProSeNet(tf.keras.Model):
         L1 : float, optional
             Strength of L1 regularization for `Dense` classifier kernel.
         """
+        super(ProSeNet, self).__init__()
 
         # Construct encoder network
-        rnn_args = default_rnn_args.update(rnn_args)
-        self.encoder = encoder.rnn(input_shape, **rnn_args)
+        default_rnn_args.update(rnn_args)
+        self.encoder = encoder.rnn(input_shape, **default_rnn_args)
 
         # Construct `Prototypes` layer
-        prototypes_args = default_prototypes_args.update(prototypes_args)
-        self.prototypes_layer = Prototypes(k, **prototypes_args)
+        default_prototypes_args.update(prototypes_args)
+        self.prototypes_layer = Prototypes(k, **default_prototypes_args)
 
         # Dense classifier with kernel restricted to > 0.
-        self.classifier = Dense(
+        self.classifier = layers.Dense(
             nclasses,
             activation='softmax',
             use_bias=False,

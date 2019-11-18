@@ -20,6 +20,8 @@ Additional required operations:
 
 ## Dataset
 
-I plan to verify this implementation by reproducing results on the [MIT-BIH Arrhythmia ECG Dataset](https://physionet.org/content/mitdb/1.0.0/) following the same preprocessing scheme as in the paper (detailed in [reference [16]](https://arxiv.org/abs/1805.00794)).
+The plan is to verify this implementation by reproducing results on the [MIT-BIH Arrhythmia ECG Dataset](https://physionet.org/content/mitdb/1.0.0/) following the same preprocessing scheme as in the paper (detailed in [Kachuee et al., 2018](https://arxiv.org/abs/1805.00794)).
 
-Check out `wfdb` package -- looks like it has relevant utilities, which is nice, since the MIT DB documentation is somewhat lacking.
+The preprocessed dataset is available for download on [Kaggle: ECG Heartbeat Categorization Dataset](https://www.kaggle.com/shayanfazeli/heartbeat/data#)
+
+Check out `wfdb` package -- looks like it has relevant utilities, which is nice, since the MIT DB documentation is somewhat difficult to parse.

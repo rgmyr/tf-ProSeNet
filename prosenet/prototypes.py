@@ -41,13 +41,15 @@ class Prototypes(KerasLayer):
 
 
     def build(self, input_shape):
-        # Create prototypes as variable
+        # Create prototypes as weight variable
+        # Note: had to add constraint to keep gradients from exploding
 
         normal_init = tf.random_normal_initializer()
         self.prototypes = self.add_weight(
             name='prototypes',
             shape=(1, self.k, input_shape[-1]),
             initializer=normal_init,    # is this the right init?
+            constraint=lambda w: tf.clip_by_value(w, -1., 1.),
             trainable=True
         )
 
@@ -55,23 +57,23 @@ class Prototypes(KerasLayer):
     def call(self, x, training=None):
         """Forward pass."""
 
-        # L2 distances from prototypes
-        # NOTE: could probably refactor this into above
+        # L2 distances b/t encodings and prototypes
         x = tf.expand_dims(x, -2)
         d2 = tf.norm(x - self.prototypes, ord=2, axis=-1)
 
         # Losses only computed `if training`
         if training:
-            if self.Ld > 0.:
-                self.add_loss(self.Ld * self._diversity_term())
-            if self.Lc > 0.:
-                Rc = tf.reduce_sum(tf.reduce_min(d2, 0))
-                self.add_loss(self.Lc * Rc)
-            if self.Le > 0.:
-                Re = tf.reduce_sum(tf.reduce_min(d2, 1))
-                self.add_loss(self.Le * Re)
+            dLoss = self.Ld * self._diversity_term()
+            cLoss = self.Lc * tf.reduce_sum(tf.reduce_min(d2, 0))
+            eLoss = self.Le * tf.reduce_sum(tf.reduce_min(d2, 1))
+        else:
+            dLoss, cLoss, eLoss = 0., 0., 0.
 
-        # Return exponentially squashed similarities
+        self.add_loss(dLoss)
+        self.add_loss(cLoss)
+        self.add_loss(eLoss)
+        
+        # Return exponentially squashed distances
         return tf.exp(-d2)
 
 

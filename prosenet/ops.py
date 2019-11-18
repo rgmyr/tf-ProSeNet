@@ -6,14 +6,14 @@ import tensorflow as tf
 
 def make2D(t):
     """Make a Tensor `t` 2D, raise ValueError if impossible."""
-    ndim = tf.rank(t).numpy()
+    ndim = tf.rank(t)
     if ndim == 2:
         return t
     elif ndim == 1:
         return tf.expand_dims(t, 0)
     else:
         t = tf.squeeze(t)
-        if tf.rank(t).numpy() != 2:
+        if tf.rank(t) != 2:
             raise ValueError(f'Tensor cant be made 2D: {t}')
         else:
             return t
@@ -32,13 +32,13 @@ def distance_matrix(a, b):
     """
     a_was_b = a is b
 
-    a = make2D(a)
+    #a = make2D(a)
     rA = tf.expand_dims(tf.reduce_sum(a * a, -1), -1)
 
     if a_was_b:
         b, rB = a, rA
     else:
-        b = make2D(b)
+        #b = make2D(b)
         rB = tf.expand_dims(tf.reduce_sum(b * b, -1), -1)
 
     D = rA - 2 * tf.matmul(a, b, transpose_b=True) + tf.transpose(rB)

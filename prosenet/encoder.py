@@ -7,7 +7,8 @@ from tensorflow.keras.layers import InputLayer, Bidirectional, LSTM, GRU
 def rnn(input_shape,
         layer_type='lstm',
         layer_args={},
-        layers=[32,64]):
+        layers=[32,64],
+        bidirectional=True):
     """
     Recurrent Neural Network encoder constructor function.
     One layer of `layer_type` will be created for each int in `layers`.
@@ -26,6 +27,9 @@ def rnn(input_shape,
 
         next_layer = layer_fn(layer_units, return_sequences=return_seq, name=layer_type+str(i), **layer_args)
 
-        model.add(Bidirectional(next_layer))
+        if bidirectional:
+            model.add(Bidirectional(next_layer))
+        else:
+            model.add(next_layer)
 
     return model
