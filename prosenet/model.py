@@ -42,11 +42,12 @@ class ProSeNet(tf.keras.Model):
         Parameters
         ----------
         input_shape : tuple(int)
-            Shape of input sequences (2D, and first dim may be None)
+            Shape of input sequences, probably: (length, features)
+            `length` may be `None` for variable length data.
         nclasses : int
             Number of output classes
         k : int
-            Number of prototypes in `Prototypes` layer
+            Number of prototype vectors in `Prototypes` layer
         rnn_args : dict, optional
             Any updates to default `encoder.rnn` construction args.
         prototypes_args : dict, optional
