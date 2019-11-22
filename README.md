@@ -2,26 +2,23 @@
 
 This is a `tf.keras` implementation of [Interpretable and Steerable Sequence Learning via Prototypes](https://arxiv.org/abs/1907.09728). It's unlikely I'll implement a mechanism for the "steering" part, but most of the interpretive stuff should be useful.
 
-## Notes
+## Status
 
-The complete loss minimized is a combination of:
+I have a prototype implementation that *sort of* works.
 
-- Cross Entropy
-- `lambda_d` * Diversity Regularization on Prototypes (with `d_min`)
-- `lambda_e` * Evidence Regularization
-- `lambda_c` * Clustering Regularization
-- `lambda_l1` * L1 Regularization of Linear Classifier
+Currently testing on the [MIT-BIH Arrhythmia ECG Dataset](https://physionet.org/content/mitdb/1.0.0/), which is available the pre-processed format described in [Kachuee et al., 2018](https://arxiv.org/abs/1805.00794) from Kaggle: [ECG Heartbeat Categorization Dataset](https://www.kaggle.com/shayanfazeli/heartbeat/data#). Issues:
 
-Additional required operations:
+No matter how I weight the different regularization terms, prototypes seems to collapse to a matrix of `ones`, with the classifier weights tending towards `[1., 0., 0., 0., 0.]`. (The first class accounts for ~83% of the dataset). 
 
-- **Prototype projection**: Every few (~4) epochs, prototype vectors are re-assigned to the closest embedding sequence in the training set.
-- **Prototype interpretation**: Need to method to grab classification weights assigned to prototype and interpret their associated label(s).
-- **Prototype simplification**: Rather than projecting prototypes to complete sequences, use beam search to find a subsequence containing critical events. **NOTE**: the paper is somewhat ambiguous as to whether this is used during training (as the "projection" step) or whether this is just an interpretation tool. I think it's the latter, but may raise an issue on their template repo to be sure.
+I've tried:
+- Using `class_weights`, and even minimizing the weight of the first class to a negligibly small number. **Does not seem to help.**
+- Training just the LSTM `encoder` first (achieves up to ~95% accuracy), then freezing those layers and training only the `prototypes_layer` and `classifier`. **Does not seem to help.**
 
-## Dataset
+Ideas to try:
+- Heavily downsampling the first class.
 
-The plan is to verify this implementation by reproducing results on the [MIT-BIH Arrhythmia ECG Dataset](https://physionet.org/content/mitdb/1.0.0/) following the same preprocessing scheme as in the paper (detailed in [Kachuee et al., 2018](https://arxiv.org/abs/1805.00794)).
+## Additional Features
 
-The preprocessed dataset is available for download on [Kaggle: ECG Heartbeat Categorization Dataset](https://www.kaggle.com/shayanfazeli/heartbeat/data#)
+**Prototype Projection** has been implemented as a `Callback`, but I have not yet implemented **Prototype Simplification** (via beam search). **NOTE**: the paper is somewhat ambiguous as to whether this is used during training (as the "projection" step) or whether this is just an interpretation tool. I think it's the latter, but may raise an issue on their template repo to be sure.
 
-Check out `wfdb` package -- looks like it has relevant utilities, which is nice, since the MIT DB documentation is somewhat difficult to parse.
+Additional functions to help with prototype interpretation will be helpful, but I want to make sure I can get the network to train properly first.

@@ -81,8 +81,9 @@ class Prototypes(KerasLayer):
         """Compute the "diversity" loss,
         which penalizes prototypes that are close to each other
 
-        NOTE: Computes full distance matrix, which is redudant, but prototypes is
-              usually a small-ish tensor, so I'm not going to worry about it.
+        NOTE: Computes full distance matrix, which is redudant, but `prototypes`
+              is usually a small-ish tensor and performance is acceptable,
+              so I'm not going to worry about it.
         """
         D = distance_matrix(self.prototypes, self.prototypes)
 
