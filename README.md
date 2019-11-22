@@ -1,6 +1,6 @@
 # TensorFlow-ProSeNet
 
-This is a `tf.keras` implementation of [Interpretable and Steerable Sequence Learning via Prototypes](https://arxiv.org/abs/1907.09728) (Ming et al., 2019). It's unlikely I'll implement a mechanism for the "steering" part, but most of the interpretive stuff should be useful.
+This is a `tf.keras` implementation of [Interpretable and Steerable Sequence Learning via Prototypes](https://arxiv.org/abs/1907.09728) (Ming et al., 2019). It's unlikely I'll implement a mechanism for the "steering" part, but most of the interpretive stuff should be useful to me.
 
 **Contributions are welcome!**
 
@@ -14,22 +14,20 @@ I'm currently testing on the [MIT-BIH Arrhythmia ECG Dataset](https://physionet.
 
 See [notebooks/test_arrythmia.ipynb](notebooks/test_arrythmia.ipynb). There are some outstanding issues...
 
-No matter how I weight the different regularization terms, prototypes seems to collapse to a matrix of `ones` (or at least to a similarly uniform matrix), with the classifier weights tending towards vectors of `[1., 0., 0., 0., 0.]`. (The first class -- "Normal" beats -- accounts for ~83% of the dataset).
+No matter how I weight the different regularization terms, the classifier weights tend towards vectors of `[+const, 0., 0., 0., 0.]`. (The first class -- "Normal" beats -- accounts for ~83% of the dataset).
 
 I've tried:
 - Using `class_weights`, even minimizing the weight of the first class to be negligibly small. **Does not seem to help.**
 - Training just the LSTM `encoder` first (achieves up to ~95% accuracy), then freezing those layers and training only the `prototypes_layer` and `classifier`. **Does not seem to help.**
 - Heavier regularization (of both prototype vector diversity and classifier weights). **Does not seem to help.**
 
-Some of these attempts at solutions have the effect of decreasing the imbalance in predicted class probabilities (e.g., the model outputs something like `[0.24, 0.19, 0.19, ...]` for every input sequence, rather than something like `[0.96, 0.01, 0.01, ...]`), but none of them seem to address the root problem.
-
 Other ideas to try:
 - Heavily downsampling the first class.
 - Verifying custom regularization terms more rigorously.
 
-## Synthetic Signal Dataset
+## Synthetic Signals Dataset
 
-I've written another `Dataset` class that generates saw/square/sine signals. This is a very simple dataset which a simple LSTM can easily master. I'm using this dataset to troubleshoot. See [notebooks/test_synthetic.ipynb](notebooks/test_synthetic.ipynb).
+I've written a `SyntheticSignalsDataset` class that generates saw/square/sine signals. This is a very simple dataset which a simple LSTM can easily master. I'm using this dataset to troubleshoot. See [notebooks/test_synthetic.ipynb](notebooks/test_synthetic.ipynb).
 
 This dataset seems to work OK after I fixed a bug in the diversity regularization function -- still troubleshooting the ECG one.
 
