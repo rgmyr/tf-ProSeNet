@@ -1,6 +1,6 @@
 # TensorFlow-ProSeNet
 
-This is a `tf.keras` implementation of [Interpretable and Steerable Sequence Learning via Prototypes](https://arxiv.org/abs/1907.09728). It's unlikely I'll implement a mechanism for the "steering" part, but most of the interpretive stuff should be useful.
+This is a `tf.keras` implementation of [Interpretable and Steerable Sequence Learning via Prototypes](https://arxiv.org/abs/1907.09728) (Ming et al., 2019). It's unlikely I'll implement a mechanism for the "steering" part, but most of the interpretive stuff should be useful.
 
 ## Status
 
