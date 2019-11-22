@@ -1,3 +1,6 @@
+"""
+Representation of the MIT-BIH ECG Arrhythmia Dataset.
+"""
 from pathlib import Path
 
 import numpy as np

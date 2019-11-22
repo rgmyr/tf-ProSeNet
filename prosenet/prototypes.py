@@ -9,12 +9,7 @@ from prosenet.ops import distance_matrix
 
 class Prototypes(KerasLayer):
     """
-    Should we combine this with a (positive restricted) Linear classifier,
-    or handle that in a full model?
-        - Probably in model, where there can also be interpretation methods
-
-    Do we add losses in `call`?
-        - Yes, I think so. But only if training? Or always computed?
+    The 'Prototype Layer' as a tf.keras Layer.
     """
     def __init__(self, k, dmin=1.0, Ld=0.01, Lc=0.01, Le=0.1, **kwargs):
         """
@@ -23,7 +18,7 @@ class Prototypes(KerasLayer):
         k : int
             Number of prototype vectors to create.
         dmin : float, optional
-            Threshold to determine whether to prototypes are close, default=1.0.
+            Threshold to determine whether two prototypes are close, default=1.0.
             For "diversity" regularization. See paper section 3.2 for details.
         Ld : float, optional
             Weight for "diversity" regularization loss, default=0.01.
@@ -44,11 +39,13 @@ class Prototypes(KerasLayer):
         # Create prototypes as weight variable
         # NOTE: had to add constraint to keep gradients from exploding
 
-        normal_init = tf.random_normal_initializer(stddev=0.25)
+        self.d = input_shape[-1]
+
+        # Makes sense to use same `initializer` as LSTM ?
         self.prototypes = self.add_weight(
             name='prototypes',
-            shape=(1, self.k, input_shape[-1]),
-            initializer='glorot_uniform',            #normal_init,    # is this the right init?
+            shape=(1, self.k, self.d),
+            initializer='glorot_uniform',
             constraint=lambda w: tf.clip_by_value(w, -1., 1.),
             trainable=True
         )
@@ -70,8 +67,8 @@ class Prototypes(KerasLayer):
             dLoss, cLoss, eLoss = 0., 0., 0.
 
         self.add_loss(dLoss)
-        self.add_loss(cLoss)
-        self.add_loss(eLoss)
+        self.add_loss(cLoss, inputs=True)
+        self.add_loss(eLoss, inputs=True)
 
         # Return exponentially squashed distances
         return tf.exp(-d2)
@@ -89,7 +86,10 @@ class Prototypes(KerasLayer):
 
         Rd = tf.nn.relu(-D + self.dmin)
 
-        return tf.reduce_sum(tf.square(Rd)) / 2.
+        # Zero diagonal elements
+        zero_diag = tf.ones_like(Rd) - tf.eye(self.k)
+
+        return tf.reduce_sum(tf.square(Rd * zero_diag)) / 2.
 
 
     def get_config(self):

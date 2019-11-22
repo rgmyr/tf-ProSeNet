@@ -17,10 +17,15 @@ class PrototypeProjection(Callback):
         A generator for data from which to compute encodings --> project
     freq : int, optional
         How often to execute the projection, in epochs, default=4.
+    print_argmins : bool, optional
+        If True, print indices of closest matches in `train_gen`, default=False.
     """
-    def __init__(self, train_gen, freq=4, **kwargs):
+    def __init__(self, train_gen, freq=4, print_argmins=False, **kwargs):
         self.train_gen = train_gen
         self.freq = freq
+        if print_argmins:
+            # need to verify behavior of `train_gen`
+            raise NotImplementedError()
         super(PrototypeProjection, self).__init__(**kwargs)
 
 

@@ -6,9 +6,11 @@ This is a `tf.keras` implementation of [Interpretable and Steerable Sequence Lea
 
 ## Status
 
-I have an implementation that *sort of* seems to work.
+The implementation needs troubleshooting / debugging work.
 
-I'm currently testing on the [MIT-BIH Arrhythmia ECG Dataset](https://physionet.org/content/mitdb/1.0.0/), which is available the pre-processed format described in [Kachuee et al., 2018](https://arxiv.org/abs/1805.00794) from Kaggle: [ECG Heartbeat Categorization Dataset](https://www.kaggle.com/shayanfazeli/heartbeat/data#).
+## MIT-BIH Dataset
+
+I'm currently testing on the [MIT-BIH Arrhythmia ECG Dataset](https://physionet.org/content/mitdb/1.0.0/), which is available the pre-processed format described in ([Kachuee et al., 2018](https://arxiv.org/abs/1805.00794)) on Kaggle Datasets: [ECG Heartbeat Categorization Dataset](https://www.kaggle.com/shayanfazeli/heartbeat/data#).
 
 See [notebooks/test_arrythmia.ipynb](notebooks/test_arrythmia.ipynb). There are some outstanding issues...
 
@@ -24,6 +26,12 @@ Some of these attempts at solutions have the effect of decreasing the imbalance 
 Other ideas to try:
 - Heavily downsampling the first class.
 - Verifying custom regularization terms more rigorously.
+
+## Synthetic Signal Dataset
+
+I've written another `Dataset` class that generates saw/square/sine signals. This is a very simple dataset which a simple LSTM can easily master. I'm using this dataset to troubleshoot. See [notebooks/test_synthetic.ipynb](notebooks/test_synthetic.ipynb).
+
+This dataset seems to work OK after I fixed a bug in the diversity regularization function -- still troubleshooting the ECG one.
 
 ## Additional Features
 
