@@ -40,14 +40,15 @@ class ArrhythmiaDataset(BaseDataset):
         return self.data_dir
 
 
-    def load_data(self, normalize=True):
+    def load_data(self, normalize=None):
         """
         Define X/y train/test.
         """
+        normalize = normalize if normalize is not None else self.normalize
+
         train_data = np.loadtxt(self.train_path, delimiter=',')
         test_data = np.loadtxt(self.test_path, delimiter=',')
 
-        # Going to try shifting to [-1, 1] range
         self.X_train = train_data[:, :-1, np.newaxis]
         if normalize:
             self.X_train = self.X_train * 2.0 - 1.0
@@ -64,4 +65,5 @@ class ArrhythmiaDataset(BaseDataset):
             'MIT-BIH Arrhythmia Dataset\n'
             f'Num classes: {self.num_classes}\n'
             f'Input shape: {self.input_shape}\n'
+            f'Train, Test counts: {self.X_train.shape[0]}, {self.X_test.shape[0]}\n'
         )

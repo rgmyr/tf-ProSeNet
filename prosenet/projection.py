@@ -6,8 +6,7 @@ from tensorflow.keras.callbacks import Callback
 
 
 class PrototypeProjection(Callback):
-    """
-    Implements the "Prototype Projection" step during training.
+    """Implements the "Prototype Projection" step during training.
 
     The associated `model` must have a sub-model called `encoder`
     and another called `prototypes_layer` (which gets its weights projected)
@@ -17,7 +16,7 @@ class PrototypeProjection(Callback):
     train_gen : prosenet.DataGenerator
         A generator for data from which to compute encodings --> project
     freq : int, optional
-        How often to call, in epochs, default=4.
+        How often to execute the projection, in epochs, default=4.
     """
     def __init__(self, train_gen, freq=4, **kwargs):
         self.train_gen = train_gen
@@ -31,6 +30,7 @@ class PrototypeProjection(Callback):
         """
         if epoch % self.freq == 0:
             print('\nComputing prototype projection...')
+
             # get encodings of all train sequences
             X_encoded = self.model.encoder.predict_generator(self.train_gen)
             X_encoded = tf.expand_dims(tf.convert_to_tensor(X_encoded), -2)
