@@ -24,6 +24,7 @@ I've tried:
 Other ideas to try:
 - Heavily downsampling the first class.
 - Verifying custom regularization terms more rigorously.
+- Put cross entropy loss on logits (rather than softmax)
 
 ## Synthetic Signals Dataset
 

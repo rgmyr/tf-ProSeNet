@@ -9,7 +9,7 @@ from prosenet.ops import distance_matrix
 
 class Prototypes(KerasLayer):
     """
-    The 'Prototype Layer' as a tf.keras Layer.
+    The 'Prototypes Layer' as a tf.keras Layer.
     """
     def __init__(self, k, dmin=1.0, Ld=0.01, Lc=0.01, Le=0.1, **kwargs):
         """
@@ -86,7 +86,7 @@ class Prototypes(KerasLayer):
 
         Rd = tf.nn.relu(-D + self.dmin)
 
-        # Zero diagonal elements
+        # Zero the diagonal elements
         zero_diag = tf.ones_like(Rd) - tf.eye(self.k)
 
         return tf.reduce_sum(tf.square(Rd * zero_diag)) / 2.
