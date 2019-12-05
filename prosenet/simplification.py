@@ -9,12 +9,17 @@ def best_candidates(S, r, p_i, w=3):
     """
     Parameters
     ----------
-    S : list(seq)
+    S : iter(seq)
 
     r : tf.keras.Model
         Sequence encoder model.
     p_i
         Prototype vector to score encodings against.
+
+    Returns
+    -------
+    _S : iter(seq)
+        The `w` sequences with the highest similarity via `r(s) ~ p_i`
     """
     pass
 
@@ -98,3 +103,4 @@ class PrototypeSimplification(Callback):
 
     def beam_search(self, w=3):
         """Beam search algorithm. Uses `self.train_gen` as dataset."""
+        pass

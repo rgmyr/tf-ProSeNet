@@ -1,12 +1,12 @@
 # TensorFlow-ProSeNet
 
-This is a `tf.keras` implementation of [Interpretable and Steerable Sequence Learning via Prototypes](https://arxiv.org/abs/1907.09728) (Ming et al., 2019). It's unlikely I'll implement a mechanism for the "steering" part, but most of the interpretive stuff should be useful to me.
+This is a `tf.keras` implementation of [Interpretable and Steerable Sequence Learning via Prototypes](https://arxiv.org/abs/1907.09728) (Ming et al., 2019). It's unlikely I'll implement any mechanisms for the "steering" part, but most of the interpretive stuff would be useful for my work.
 
 **Contributions are welcome!**
 
 ## Status
 
-The implementation needs troubleshooting / debugging work.
+This implementation needs troubleshooting / debugging work.
 
 ## MIT-BIH Dataset
 
@@ -22,7 +22,7 @@ I've tried:
 - Heavier regularization (of both prototype vector diversity and classifier weights). **Does not seem to help.**
 
 Other ideas to try:
-- Heavily downsampling the first class.
+- Heavily downsampling the first class. (Undesirable, since it wouldn't be a reproduction of results.)
 - Verifying custom regularization terms more rigorously.
 - Put cross entropy loss on logits (rather than softmax)
 
@@ -34,6 +34,6 @@ This dataset seems to work OK after I fixed a bug in the diversity regularizatio
 
 ## Additional Features
 
-**Prototype Projection** has been implemented as a `Callback`, but I have not yet implemented **Prototype Simplification** (via beam search). **NOTE**: the paper is somewhat ambiguous as to whether this is used during training (as the "projection" step) or whether this is just an interpretation tool. I'm pretty sure it's the latter, but I may raise an issue on [their template repo](https://github.com/myaooo/ProSeNet) just to be certain.
+**Prototype Projection** has been implemented as a `Callback`, but I have not yet implemented **Prototype Simplification** (via beam search). **NOTE**: the paper is somewhat ambiguous as to whether this is used during training (as the "projection" step) or whether this is just an interpretation tool. I think it's the latter, but may try to raise an issue on [their template repo](https://github.com/myaooo/ProSeNet) to make sure.
 
 Additional functions to help with prototype interpretation will be helpful, but I want to make sure I can get the network to train properly first.
